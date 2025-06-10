@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Florería Danna - Sobre Nosotros</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body {
+      background-color: #f5f9f7;
+      background-image: url('https://p4.wallpaperbetter.com/wallpaper/562/529/83/flowers-blossom-artistic-flower-wallpaper-preview.jpg');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-attachment: fixed;
+      background-size: cover;
+
+      color: #2e7d32;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.7;
+      margin: 0;
+      padding: 0;
+
+      /* transición suave al cargar el fondo */
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+    }
+
+    /* Cuando se cargue la página, body tendrá opacity 1 */
+    body.loaded {
+      opacity: 1;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 50px auto 80px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+
+      /* transición para que el main también se vea suave */
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    main.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    header {
+      background-color: #3e8e41;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 25px;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+    }
+
+    nav a:hover, nav a.active {
+      background-color: #2f6f2b;
+    }
+
+    main h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      letter-spacing: 1.2px;
+      text-align: center;
+      color: #2c6b28;
+    }
+
+    main p {
+      font-size: 1.25rem;
+      margin-bottom: 40px;
+      text-align: center;
+      color: #3c7b33;
+    }
+
+    section h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #2c6b28;
+      border-bottom: 3px solid #2e7d32;
+      padding-bottom: 8px;
+    }
+
+    section p {
+      font-size: 1.1rem;
+      color: #555;
+      margin-bottom: 40px;
+      text-align: justify;
+    }
+
+    footer {
+      background: #3e8e41;
+      color: white;
+      text-align: center;
+      padding: 20px 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.6px;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.12);
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      main {
+        margin: 30px 15px 60px;
+        padding: 25px 20px;
+      }
+
+      main h1 {
+        font-size: 2.2rem;
+      }
+
+      section h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="productos.html">Productos</a>
+      <a href="sobreNosotros.html" class="active">Sobre Nosotros</a>
+      <a href="contacto.html">Contacto</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Sobre Florería Danna</h1>
+    <p>
+      Desde 1995, Florería Danna se ha consolidado como un referente en el mundo floral, ofreciendo flores frescas y hermosas que alegran los momentos más especiales de nuestros clientes. Somos una empresa familiar con una pasión profunda por la naturaleza y el arte floral, combinando tradición y creatividad para brindar un servicio de calidad incomparable.
+    </p>
+
+    <section>
+      <h2>Nuestra Misión</h2>
+      <p>
+        Nuestra misión es llevar alegría y frescura a cada hogar y evento a través de flores seleccionadas cuidadosamente, asegurando la máxima calidad y un trato amable y personalizado. Nos esforzamos por superar las expectativas de quienes confían en nosotros, con un compromiso firme hacia la sostenibilidad y el respeto por el medio ambiente.
+      </p>
+    </section>
+
+    <section>
+      <h2>Nuestro Equipo</h2>
+      <p>
+        En Florería Danna contamos con un equipo de profesionales apasionados por la naturaleza y el diseño floral. Desde floristas expertos hasta personal de atención al cliente, todos trabajamos en armonía para ofrecerte experiencias únicas que reflejen la belleza y la delicadeza de las flores.
+      </p>
+    </section>
+
+    <section>
+      <h2>Trabajadores Destacados</h2>
+      <p>
+        <strong>María López</strong>: Nuestra florista principal, con más de 15 años de experiencia, especialista en arreglos personalizados y decoración para eventos especiales.<br><br>
+        <strong>Carlos Méndez</strong>: Responsable de logística y selección de flores, asegura que cada ramo llegue fresco y en perfectas condiciones.<br><br>
+        <strong>Lucía Ramírez</strong>: Coordinadora de atención al cliente, dedicada a brindar un servicio cálido y eficiente, ayudando a nuestros clientes a elegir el detalle perfecto.<br><br>
+        <strong>Pedro Sánchez</strong>: Diseñador floral creativo, apasionado por combinar colores y formas para crear composiciones innovadoras y únicas.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Florería Danna. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    // Al cargar la página agrego las clases para activar la transición
+    window.addEventListener('load', () => {
+      document.body.classList.add('loaded');
+      document.querySelector('main').classList.add('visible');
+    });
+  </script>
+</body>
+</html>

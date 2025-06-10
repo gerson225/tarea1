@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Florería Danna - Productos</title>
+  <style>
+    /* Reset básico */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fff9f6;
+      color: #333;
+    }
+
+    header {
+      background-color: #e27d60;
+      padding: 15px 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-right: 25px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover, nav a.active {
+      color: #f6e2b3;
+      border-bottom: 2px solid #f6e2b3;
+      padding-bottom: 3px;
+    }
+
+    .cart-counter {
+      position: relative;
+      font-size: 1.7rem;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .cart-counter::after {
+      content: attr(data-count);
+      position: absolute;
+      top: -10px;
+      right: -15px;
+      background: #f6e2b3;
+      color: #e27d60;
+      width: 24px;
+      height: 24px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 24px;
+      transition: all 0.3s ease;
+      transform-origin: center;
+      transform: scale(1);
+    }
+
+    .cart-counter[data-count="0"]::after {
+      content: "";
+      width: 0;
+      height: 0;
+      border-radius: 0;
+      background: transparent;
+      transform: scale(0);
+    }
+
+    main {
+      height: calc(100vh - 60px);
+      width: 100vw;
+      padding: 20px 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-auto-rows: 460px;
+      gap: 25px;
+      overflow-y: auto;
+    }
+
+    .product-card {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      outline-offset: 4px;
+      overflow: hidden;
+    }
+
+    .product-card:focus,
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      z-index: 2;
+    }
+
+    .product-image {
+      width: 100%;
+      height: 65%;
+      object-fit: cover;
+      border-bottom: 3px solid #e27d60;
+      transition: transform 0.5s ease;
+    }
+
+    .product-card:hover .product-image,
+    .product-card:focus .product-image {
+      transform: scale(1.05);
+    }
+
+    .product-info {
+      flex-grow: 1;
+      padding: 15px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .product-name {
+      font-size: 1.3rem;
+      color: #e27d60;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .product-description {
+      font-size: 1rem;
+      color: #666;
+      flex-grow: 1;
+      margin-bottom: 15px;
+    }
+
+    .product-price {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #3e3e3e;
+      margin-bottom: 10px;
+    }
+
+    .btn-add-cart {
+      background-color: #e27d60;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      align-self: flex-start;
+      user-select: none;
+    }
+
+    .btn-add-cart:hover, .btn-add-cart:focus {
+      background-color: #cf684e;
+      transform: scale(1.05);
+      outline: none;
+    }
+
+    footer {
+      background-color: #e27d60;
+      color: white;
+      text-align: center;
+      padding: 12px 20px;
+      font-size: 0.9rem;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+    }
+
+    main::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    main::-webkit-scrollbar-track {
+      background: #f6f1ed;
+    }
+
+    main::-webkit-scrollbar-thumb {
+      background-color: #e27d60;
+      border-radius: 10px;
+      border: 2px solid #f6f1ed;
+    }
+
+    /* Carrito modal */
+    #cartModal {
+      position: fixed;
+      top: 60px;
+      right: 0;
+      width: 350px;
+      height: calc(100vh - 60px);
+      background: #fff;
+      box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      z-index: 150;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow-y: auto;
+      border-left: 4px solid #e27d60;
+    }
+
+    #cartModal.active {
+      transform: translateX(0);
+    }
+
+    #cartModal h2 {
+      color: #e27d60;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    #cartItems {
+      flex-grow: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+    }
+
+    .cart-item-details {
+      max-width: 180px;
+    }
+
+    .cart-item-name {
+      font-weight: 700;
+      color: #e27d60;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .cart-item-qty {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .cart-item-price {
+      font-weight: 700;
+      color: #333;
+      font-size: 1rem;
+      margin-left: 10px;
+    }
+
+    .btn-remove {
+      background: #f44336;
+      border: none;
+      color: white;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      padding: 5px 10px;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    .btn-remove:hover {
+      background-color: #d32f2f;
+    }
+
+    /* Cupon */
+    #couponSection {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    #couponSection input[type="text"] {
+      padding: 8px 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      outline-offset: 2px;
+      transition: border-color 0.3s ease;
+    }
+
+    #couponSection input[type="text"]:focus {
+      border-color: #e27d60;
+      outline: none;
+    }
+
+    #applyCouponBtn {
+      background-color: #e27d60;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    #applyCouponBtn:hover, #applyCouponBtn:focus {
+      background-color: #cf684e;
+      outline: none;
+    }
+
+    /* Total */
+    #cartTotal {
+      margin-top: 15px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      color: #e27d60;
+    }
+
+    /* Botón cerrar carrito */
+    #closeCartBtn {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      color: #e27d60;
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      user-select: none;
+    }
+
+    #closeCartBtn:hover {
+      color: #cf684e;
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="productos.html" class="active">Productos</a>
+      <a href="sobreNosotros.html">Sobre Nosotros</a>
+      <a href="contacto.html">Contacto</a>
+    </nav>
+    <div class="cart-counter" id="cartCounter" data-count="0" aria-label="Carrito de compras con 0 productos" tabindex="0" role="button" title="Ver carrito">
+      🛒
+    </div>
+  </header>
+
+  <main>
+    <!-- Ejemplo 5 productos para no hacer el código gigante, agrega más con el mismo formato -->
+    <article class="product-card" tabindex="0" role="group" aria-labelledby="product1-name" data-id="1" data-name="Ramo Especial Rosas" data-price="600">
+      <img src="img/ramo especial.png" alt="Ramo especial de rosas" class="product-image" />
+      <div class="product-info">
+        <h2 class="product-name" id="product1-name">Ramo Especial Rosas</h2>
+        <p class="product-description">Rosas seleccionadas con detalle para momentos inolvidables.</p>
+        <div class="product-price">50s SOLES </div>
+        <button class="btn-add-cart" aria-label="Agregar Ramo Especial Rosas al carrito">Agregar al carrito</button>
+      </div>
+    </article>
+
+    <article class="product-card" tabindex="0" role="group" aria-labelledby="product2-name" data-id="2" data-name="Ramo de Margaritas" data-price="280">
+      <img src="img/margaritas.png" alt="Ramo de margaritas" class="product-image" />
+      <div class="product-info">
+        <h2 class="product-name" id="product2-name">Ramo de Margaritas</h2>
+        <p class="product-description">Margaritas frescas y alegres para regalar sonrisas.</p>
+        <div class="product-price">70 SOLES </div>
+        <button class="btn-add-cart" aria-label="Agregar Ramo de Margaritas al carrito">Agregar al carrito</button>
+      </div>
+    </article>
+
+    <article class="product-card" tabindex="0" role="group" aria-labelledby="product3-name" data-id="3" data-name="Ramo de Dalias" data-price="470">
+      <img src="img/ramo dalias.png" alt="Ramo de dalias" class="product-image" />
+      <div class="product-info">
+        <h2 class="product-name" id="product3-name">Ramo de Dalias</h2>
+        <p class="product-description">Colores vibrantes y formas únicas para destacar.</p>
+        <div class="product-price">100 SOLES </div>
+        <button class="btn-add-cart" aria-label="Agregar Ramo de Dalias al carrito">Agregar al carrito</button>
+      </div>
+    </article>
+
+    <article class="product-card" tabindex="0" role="group" aria-labelledby="product4-name" data-id="4" data-name="Ramo de Lirios" data-price="390">
+      <img src="img/lirios2.png" alt="Ramo de lirios" class="product-image" />
+      <div class="product-info">
+        <h2 class="product-name" id="product4-name">Ramo de Lirios</h2>
+        <p class="product-description">Elegancia y aroma en cada flor.</p>
+        <div class="product-price">100 SOLES </div>
+        <button class="btn-add-cart" aria-label="Agregar Ramo de Lirios al carrito">Agregar al carrito</button>
+      </div>
+    </article>
+     
+<article class="product-card" tabindex="0" role="group" aria-labelledby="product5-name" data-id="5" data-name="Bouquet de Tulipanes" data-price="320">
+  <img src="img/buquettulipanes.png" alt="Bouquet de tulipanes" class="product-image" />
+  <div class="product-info">
+    <h2 class="product-name" id="product5-name">Bouquet de Tulipanes</h2>
+    <p class="product-description">Colores vibrantes que alegran el día.</p>
+    <div class="product-price">320 SOLES</div>
+    <button class="btn-add-cart" aria-label="Agregar Bouquet de Tulipanes al carrito">Agregar al carrito</button>
+  </div>
+</article>
+
+<article class="product-card" tabindex="0" role="group" aria-labelledby="product6-name" data-id="6" data-name="Ramo de Margaritas" data-price="280">
+  <img src="img/ramo margaritas.png" alt="Ramo de margaritas" class="product-image" />
+  <div class="product-info">
+    <h2 class="product-name" id="product6-name">Ramo de Margaritas</h2>
+    <p class="product-description">Simplicidad y frescura natural.</p>
+    <div class="product-price">280 SOLES</div>
+    <button class="btn-add-cart" aria-label="Agregar Ramo de Margaritas al carrito">Agregar al carrito</button>
+  </div>
+</article>
+
+<article class="product-card" tabindex="0" role="group" aria-labelledby="product7-name" data-id="7" data-name="Orquídeas Blancas" data-price="450">
+  <img src="img/orquidias.png" alt="Orquídeas blancas" class="product-image" />
+  <div class="product-info">
+    <h2 class="product-name" id="product7-name">Orquídeas Blancas</h2>
+    <p class="product-description">Pureza y sofisticación para ocasiones especiales.</p>
+    <div class="product-price">450 SOLES</div>
+    <button class="btn-add-cart" aria-label="Agregar Orquídeas Blancas al carrito">Agregar al carrito</button>
+  </div>
+</article>
+
+<article class="product-card" tabindex="0" role="group" aria-labelledby="product8-name" data-id="8" data-name="Ramo de Girasoles" data-price="350">
+  <img src="img/ramo degirasoles.png" alt="Ramo de girasoles" class="product-image" />
+  <div class="product-info">
+    <h2 class="product-name" id="product8-name">Ramo de Girasoles</h2>
+    <p class="product-description">Luz y alegría en cada pétalo.</p>
+    <div class="product-price">350 SOLES</div>
+    <button class="btn-add-cart" aria-label="Agregar Ramo de Girasoles al carrito">Agregar al carrito</button>
+  </div>
+</article>
+
+<article class="product-card" tabindex="0" role="group" aria-labelledby="product9-name" data-id="9" data-name="Bouquet de Peonías" data-price="400">
+  <img src="img/peonias.webp" alt="Bouquet de peonías" class="product-image" />
+  <div class="product-info">
+    <h2 class="product-name" id="product9-name">Bouquet de Peonías</h2>
+    <p class="product-description">Romanticismo y suavidad para tu evento.</p>
+    <div class="product-price">400 SOLES</div>
+    <button class="btn-add-cart" aria-label="Agregar Bouquet de Peonías al carrito">Agregar al carrito</button>
+  </div>
+</article>
+
+<article class="product-card" tabindex="0" role="group" aria-labelledby="product10-name" data-id="10" data-name="Ramo de Claveles" data-price="290">
+  <img src="img/claveles.jpg" alt="Ramo de claveles" class="product-image" />
+  <div class="product-info">
+    <h2 class="product-name" id="product10-name">Ramo de Claveles</h2>
+    <p class="product-description">Tradición y encanto en cada flor.</p>
+    <div class="product-price">290 SOLES</div>
+    <button class="btn-add-cart" aria-label="Agregar Ramo de Claveles al carrito">Agregar al carrito</button>
+  </div>
+</article>
+
+<article class="product-card" tabindex="0" role="group" aria-labelledby="product11-name" data-id="11" data-name="Ramo Mixto Primavera" data-price="420">
+  <img src="img/ramo especial.png" alt="Ramo mixto primavera" class="product-image" />
+  <div class="product-info">
+    <h2 class="product-name" id="product11-name">Ramo Mixto Primavera</h2>
+    <p class="product-description">Colores frescos y variados para cualquier ocasión.</p>
+    <div class="product-price">420 SOLES</div>
+    <button class="btn-add-cart" aria-label="Agregar Ramo Mixto Primavera al carrito">Agregar al carrito</button>
+  </div>
+</article>
+
+<article class="product-card" tabindex="0" role="group" aria-labelledby="product12-name" data-id="12" data-name="Ramo de Gardenias" data-price="460">
+  <img src="img/gardenias.avif" alt="Ramo de gardenias" class="product-image" />
+  <div class="product-info">
+    <h2 class="product-name" id="product12-name">Ramo de Gardenias</h2>
+    <p class="product-description">Fragancia intensa y delicada belleza.</p>
+    <div class="product-price">460 SOLES</div>
+    <button class="btn-add-cart" aria-label="Agregar Ramo de Gardenias al carrito">Agregar al carrito</button>
+  </div>
+</article>
+
+<article class="product-card" tabindex="0" role="group" aria-labelledby="product13-name" data-id="13" data-name="Ramo de Jazmín" data-price="380">
+  <img src="img/jazmin.jpg" alt="Ramo de jazmín" class="product-image" />
+  <div class="product-info">
+    <h2 class="product-name" id="product13-name">Ramo de Jazmín</h2>
+    <p class="product-description">Aroma dulce y delicadeza natural.</p>
+    <div class="product-price">380 SOLES</div>
+    <button class="btn-add-cart" aria-label="Agregar Ramo de Jazmín al carrito">Agregar al carrito</button>
+  </div>
+</article>
+
+    
+
+    
+    
+    <!-- Agrega más productos con el mismo formato y cambia data-id, data-name y data-price -->
+
+  </main>
+
+  <!-- Modal carrito -->
+  <aside id="cartModal" aria-hidden="true" aria-label="Carrito de compras">
+    <button id="closeCartBtn" aria-label="Cerrar carrito">&times;</button>
+    <h2>Tu Carrito</h2>
+    <div id="cartItems" role="list" aria-live="polite" aria-relevant="additions removals"></div>
+    
+    <div id="couponSection">
+      <input type="text" id="couponInput" placeholder="Código de cupón" aria-label="Código de cupón de descuento" />
+      <button id="applyCouponBtn">Aplicar Cupón</button>
+      <small id="couponMessage" role="alert" style="color:#d32f2f;"></small>
+    </div>
+
+    <div id="cartTotal">Total: $0 </div>
+  </aside>
+
+  <footer>
+    <p>© 2025 Florería Danna. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    // Estado del carrito
+    let cart = [];
+    let couponApplied = null;
+    const coupons = {
+      "FLOR20": 0.20,
+      "DANNA10": 0.10,
+      "PRIMAVERA5": 0.05
+    };
+
+    const cartCounter = document.getElementById('cartCounter');
+    const cartModal = document.getElementById('cartModal');
+    const cartItemsContainer = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+    const couponInput = document.getElementById('couponInput');
+    const applyCouponBtn = document.getElementById('applyCouponBtn');
+    const couponMessage = document.getElementById('couponMessage');
+    const closeCartBtn = document.getElementById('closeCartBtn');
+
+    // Función para actualizar contador
+    function updateCartCounter() {
+      const totalQty = cart.reduce((acc, item) => acc + item.quantity, 0);
+      cartCounter.dataset.count = totalQty;
+      cartCounter.setAttribute('aria-label', `Carrito de compras con ${totalQty} productos`);
+    }
+
+    // Función para mostrar carrito
+    function renderCart() {
+      cartItemsContainer.innerHTML = '';
+      if(cart.length === 0) {
+        cartItemsContainer.innerHTML = '<p>Tu carrito está vacío.</p>';
+        cartTotal.textContent = 'Total: $0 MXN';
+        return;
+      }
+
+      cart.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'cart-item';
+        itemDiv.setAttribute('role', 'listitem');
+
+        itemDiv.innerHTML = `
+          <div class="cart-item-details">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-qty">Cantidad: ${item.quantity}</div>
+          </div>
+          <div>
+            <span class="cart-item-price">$${(item.price * item.quantity).toFixed(2)} S/</span>
+            <button class="btn-remove" aria-label="Eliminar ${item.name} del carrito" data-id="${item.id}">X</button>
+          </div>
+        `;
+
+        cartItemsContainer.appendChild(itemDiv);
+      });
+
+      updateTotal();
+    }
+
+    // Función para actualizar total (con cupón)
+    function updateTotal() {
+      let total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+      if (couponApplied) {
+        total = total * (1 - couponApplied.discount);
+      }
+      cartTotal.textContent = `Total: $${total.toFixed(2)} SOLES`;
+    }
+
+    // Agregar producto al carrito
+    function addToCart(id, name, price) {
+      const existingItem = cart.find(item => item.id === id);
+      if (existingItem) {
+        existingItem.quantity++;
+      } else {
+        cart.push({id, name, price, quantity: 1});
+      }
+      couponApplied = null; // Resetea cupón al agregar nuevo producto
+      couponInput.value = '';
+      couponMessage.textContent = '';
+      updateCartCounter();
+      renderCart();
+      openCart();
+    }
+
+    // Quitar producto del carrito
+    function removeFromCart(id) {
+      cart = cart.filter(item => item.id !== id);
+      updateCartCounter();
+      renderCart();
+    }
+
+    // Abrir carrito
+    function openCart() {
+      cartModal.classList.add('active');
+      cartModal.setAttribute('aria-hidden', 'false');
+    }
+
+    // Cerrar carrito
+    function closeCart() {
+      cartModal.classList.remove('active');
+      cartModal.setAttribute('aria-hidden', 'true');
+    }
+
+    // Aplicar cupón
+    function applyCoupon() {
+      const code = couponInput.value.trim().toUpperCase();
+      if(!code) {
+        couponMessage.style.color = '#d32f2f';
+        couponMessage.textContent = 'Por favor ingresa un código.';
+        return;
+      }
+      if(!cart.length) {
+        couponMessage.style.color = '#d32f2f';
+        couponMessage.textContent = 'Agrega productos antes de aplicar un cupón.';
+        return;
+      }
+
+      if(coupons[code]) {
+        couponApplied = {code, discount: coupons[code]};
+        couponMessage.style.color = '#388e3c';
+        couponMessage.textContent = `Cupón ${code} aplicado: ${coupons[code]*100}% de descuento`;
+        updateTotal();
+      } else {
+        couponApplied = null;
+        couponMessage.style.color = '#d32f2f';
+        couponMessage.textContent = 'Código inválido.';
+        updateTotal();
+      }
+    }
+
+    // Eventos botones "Agregar al carrito"
+    document.querySelectorAll('.btn-add-cart').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const card = e.target.closest('.product-card');
+        const id = Number(card.dataset.id);
+        const name = card.dataset.name;
+        const price = Number(card.dataset.price);
+        addToCart(id, name, price);
+
+        // Animar contador
+        cartCounter.style.transform = 'scale(1.3)';
+        setTimeout(() => {
+          cartCounter.style.transform = 'scale(1)';
+        }, 200);
+      });
+    });
+
+    // Evento eliminar producto
+    cartItemsContainer.addEventListener('click', (e) => {
+      if(e.target.classList.contains('btn-remove')) {
+        const id = Number(e.target.dataset.id);
+        removeFromCart(id);
+      }
+    });
+
+    // Evento abrir/cerrar carrito
+    cartCounter.addEventListener('click', () => {
+      if(cartModal.classList.contains('active')) {
+        closeCart();
+      } else {
+        openCart();
+      }
+    });
+
+    closeCartBtn.addEventListener('click', closeCart);
+
+    // Aplicar cupón
+    applyCouponBtn.addEventListener('click', applyCoupon);
+
+    // Tecla ESC para cerrar carrito
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && cartModal.classList.contains('active')) {
+        closeCart();
+      }
+    });
+
+  </script>
+</body>
+</html>
